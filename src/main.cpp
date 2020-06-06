@@ -54,7 +54,7 @@ void setup() {
 
   server.on("/api/v1/send", HTTP_POST, [](AsyncWebServerRequest *request){
     uint8_t addr;
-    u_char *buf;
+    uint8_t buf[] = "        ";
     String data;
     Serial.println("[Wi-Fi] Request on /api/v1/send");
 
