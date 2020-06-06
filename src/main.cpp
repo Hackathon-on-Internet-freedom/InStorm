@@ -54,7 +54,8 @@ void setup() {
 
   server.on("/api/v1/send", HTTP_POST, [](AsyncWebServerRequest *request){
     uint8_t addr;
-    u_char buf[RH_MESH_MAX_MESSAGE_LEN];
+    u_char *buf;
+    String data;
     Serial.println("[Wi-Fi] Request on /api/v1/send");
 
     if (request->hasParam("addr", true) && request->hasParam("body", true)) {
@@ -62,7 +63,11 @@ void setup() {
         addr = request->getParam("addr", true)->value().toInt();
         Serial.print("[Wi-Fi/RadioLogic] Sending message to ");
         Serial.println(addr);
-        request->getParam("body", true)->value().getBytes(buf, sizeof(buf));
+        data = request->getParam("body", true)->value().c_str();
+        Serial.print("[Wi-Fi/RadioLogic] Message is ");
+        Serial.println(data);
+        strcpy((char*) buf, data.c_str()); 
+        Serial.println("[Wi-Fi/RadioLogic] Message encoded and ready to send");
         if (mesh.sendtoWait(buf, sizeof(buf), addr) == RH_ROUTER_ERROR_NONE) {
           Serial.println("[Wi-Fi/RadioLogic] Sending failed");
           request->send(500, "text/plain", "fail");
